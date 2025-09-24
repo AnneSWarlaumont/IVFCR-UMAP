@@ -2,7 +2,6 @@
 # finished and can be kept and discard those that are in-progress
 
 setwd("~/Documents/GitHub/IVFCR-UMAP/")
-babies_list <- read.csv("babies_list_cleanaudio.csv")
 completed_relabel_file_info <- data.frame(
   wav_filename <- character(),
   segments_filename <- character(),
