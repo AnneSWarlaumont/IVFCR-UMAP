@@ -94,3 +94,6 @@ for (a in 1:nrow(completed_relabels)){
   }
   
 }
+
+write.csv(recordings_data,"recordings_cleaning_data.csv")
+write.csv(listeners_data,"listeners_cleaning_data.csv")
