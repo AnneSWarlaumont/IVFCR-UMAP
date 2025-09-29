@@ -8,7 +8,10 @@ setwd("~/Documents/GitHub/IVFCR-UMAP/")
 recordings_cleaning_data <- read.csv("cleaning_metadata/recordings_cleaning_data.csv")
 relabel_file_info <- read.csv("cleaning_metadata/completed_relabel_file_info.csv")
 
-for (r in 1:nrow(recordings_cleaning_data){
+for (r in 1:nrow(recordings_cleaning_data)){
+  p1_listeners <- unlist(strsplit(recordings_cleaning_data$listeners_pass1[r],","))
+  p2_listeners <- unlist(strsplit(recordings_cleaning_data$listeners_pass2[2],","))
+  
   # loop through listeners_pass1
   # if a listener also appears in listeners_pass2, look up their pass 2 labels filename
   # otherwise, look up their pass 1 labels filename
