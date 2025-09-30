@@ -61,9 +61,3 @@ for (r in 1:nrow(recordings_cleaning_data)){
   write.csv(r_clip_labels,paste("cleaning_metadata/clip_labels_",r_babyID,"_",r_babyAge,".csv",sep=""))
   rm("r_clip_labels")
 }
-
-# Some files have no clean infant clips. Should we check interrater reliability
-# and disregard raters with poor agreement, and see if that leads to more clips
-# being identified as clean? Maybe some raters were much more conservative than
-# others in giving a 1 rating. I can also check just agreement with myself, 
-# listener id lplf, on the files I relabeled.
