@@ -49,7 +49,7 @@ for (r in 1:nrow(recordings_cleaning_data)){
   for (c in 1:nrow(r_clip_labels)){
     labels <- r_clip_labels[c,!(names(r_clip_labels) %in% c("recording","startSeconds","endSeconds"))]
     freqs <- table(as.numeric(labels))
-    modal_prom <- which.max(freqs)
+    modal_prom <- as.numeric(names(which.max(freqs))) # TODO! fix this (see step 5)
     r_clip_labels$modal_prominence[c] <- modal_prom
     if (modal_prom==1){
       r_clip_labels$clean[c] <- TRUE
