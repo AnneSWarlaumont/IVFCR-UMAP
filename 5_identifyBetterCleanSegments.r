@@ -2,7 +2,7 @@
 
 library(dplyr)
 
-setwd("~/Documents/GitHub/IVFCR-UMAP/cleaning_metadata")
+setwd("~/Documents/GitHub/IVFCR-UMAP/cleaning_metadata/")
 w_kappas <- read.csv("weighted_kappas.csv")
 
 # Get the average kappa for each listener
@@ -32,6 +32,9 @@ for (f in clip_files){
   
   best_clip_labels$modal_prominence <- modal_prom
   best_clip_labels$clean <- cleanB
+  best_clip_labels$recording <- clip_labels$recording
+  best_clip_labels$startSecond <- clip_labels$startSeconds
+  best_clip_labels$endSecond <- clip_labels$endSeconds
   
   write.csv(best_clip_labels,paste("best_",f,sep=""))
   

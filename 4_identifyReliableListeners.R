@@ -4,7 +4,7 @@ library(irr)
 
 ref_listener <- "lplf" # This is me (Anne)
 
-setwd("~/Documents/GitHub/IVFCR-UMAP/cleaning_metadata")
+setwd("~/Documents/GitHub/IVFCR-UMAP/cleaning_metadata/")
 completed_relabels <- read.csv("completed_relabel_file_info.csv")
 listeners_cleaning_data <- read.csv("listeners_cleaning_data.csv")
 
