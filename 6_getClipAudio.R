@@ -30,7 +30,7 @@ for (f in clip_table_files){
     clean <- clip_table$clean[v]
     if (clean){
       clipWav <- readWave(bigWavFile,from=startSec,to=endSec,units="seconds")
-      clipWavFile <- paste(clipWavDir,"_",startSec,"_",endSec,".wav",sep="")
+      clipWavFile <- paste(clipWavDir,gsub(".csv","",f),"_",startSec,"_",endSec,".wav",sep="")
       writeWave(clipWav,clipWavFile,extensible = FALSE)
     }
   }
