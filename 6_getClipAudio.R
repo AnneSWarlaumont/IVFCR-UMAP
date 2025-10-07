@@ -1,6 +1,8 @@
 # Based on each recording's best_clip_labels*.csv file, extract each clean
 # CHN as an individual audio folder. Save in a folder with the same name as the
 # csv file.
+# Note that this runs a lot faster from the Terminal, not in RStudio, as loading
+# the big wav file using tuneR is very slow in RStudio for some reason.
 
 library(tuneR)
 setWavPlayer("/usr/bin/afplay")
@@ -12,11 +14,15 @@ setWavPlayer("/usr/bin/afplay")
 SJV_dir <- "~/Library/CloudStorage/Box-Box/SanJoaquinValleyCorpus_Public/"
 setwd("~/Documents/GitHub/IVFCR-UMAP/cleaning_metadata/")
 
-clip_table_files <- list.files(pattern = "best_clip_labels*")
+clip_table_files <- list.files(pattern = "clip_labels*")
 for (f in clip_table_files){
   
   clip_table <- read.csv(f)
   bigWavFile <- paste(SJV_dir,clip_table$recording[1],sep="")
+  clipWavDir <- paste(gsub(".csv","",f),"_wavFiles/",sep="")
+  if (!dir.exists(clipWavDir)){
+    dir.create(clipWavDir)
+  }
   
   for (v in 1:nrow(clip_table)){
     startSec <- clip_table$startSecond[v]
@@ -24,7 +30,8 @@ for (f in clip_table_files){
     clean <- clip_table$clean[v]
     if (clean){
       clipWav <- readWave(bigWavFile,from=startSec,to=endSec,units="seconds")
-      #play(clipWav)
+      clipWavFile <- paste(clipWavDir,"_",startSec,"_",endSec,".wav",sep="")
+      writeWave(clipWav,clipWavFile,extensible = FALSE)
     }
   }
   
