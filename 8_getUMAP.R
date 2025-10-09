@@ -87,7 +87,8 @@ legend("topright",inset = c(-.25, 0),legend=unique(sort(as.numeric(balanced_data
 dev.off()
 
 saveRDS(balanced_spectral_umap,file="balanced_spectral_umap.rds",ascii = TRUE)
-
+saveRDS(balanced_data_ages,file="balanced_data_ages.rds",ascii = TRUE)
+saveRDS(balanced_data_babies,file="balanced_data_babies.rds",ascii = TRUE)
 
 # Customize the UMAP to have higher n_neighbors, so a smoother distribution of
 # points. Takes longer to run.
