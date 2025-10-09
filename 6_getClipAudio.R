@@ -14,7 +14,7 @@ setWavPlayer("/usr/bin/afplay")
 SJV_dir <- "~/Library/CloudStorage/Box-Box/SanJoaquinValleyCorpus_Public/"
 setwd("~/Documents/GitHub/IVFCR-UMAP/cleaning_metadata/")
 
-clip_table_files <- list.files(pattern = "clip_labels*")
+clip_table_files <- list.files(pattern = "best_clip_labels*")
 for (f in clip_table_files){
   
   clip_table <- read.csv(f)
@@ -30,7 +30,7 @@ for (f in clip_table_files){
     clean <- clip_table$clean[v]
     if (clean){
       clipWav <- readWave(bigWavFile,from=startSec,to=endSec,units="seconds")
-      clipWavFile <- paste(clipWavDir,gsub(".csv","",f),"_",startSec,"_",endSec,".wav",sep="")
+      clipWavFile <- paste(clipWavDir,gsub(".*clip_labels_","",gsub(".csv","",f)),"_",startSec,"_",endSec,".wav",sep="")
       writeWave(clipWav,clipWavFile,extensible = FALSE)
     }
   }
