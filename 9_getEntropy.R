@@ -24,5 +24,8 @@ for (age in age_levels){
   entropy_by_age[age] <- -sum(p * log2(p))
 }
 
+# Need to add export of the entropy results
+# And also implement it at the recording level
+
 # It would be nice to show the grid superimposed on the umap plot
 # And then perhaps also show a heatmap corresponding to the histogram used in entropy calculation.
