@@ -52,7 +52,7 @@ for (run in 1:nruns){
   
 }
 
-write.csv(entropyData,paste(runDir,"entropyData_runLevel.csv",sep=""))
+write.csv(entropyData,"umap_data/entropyData_runLevel.csv",row.names = FALSE)
 
 pooledEntropyData <- data.frame(infant <- character(),
                           age <- integer(),
@@ -92,7 +92,7 @@ for (b in babies){
                            nRuns = n_runs)
   pooledEntropyData <- rbind(pooledEntropyData,pooled_row)
 }
-write.csv(pooledEntropyData,paste(runDir,"entropyData_pooled.csv",sep=""),row.names = FALSE)
+write.csv(pooledEntropyData,"dispersionData.csv",row.names = FALSE)
 
 # It could be nice to show the grid of bins used for entropy calculation
 # superimposed on the umap plot.

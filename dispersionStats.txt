@@ -1,0 +1,58 @@
+
+Call:
+lm(formula = scale(entropy_avg) ~ poly(scale(age), 2), data = dispersionData)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-1.54050 -0.26363  0.03086  0.17921  1.07538 
+
+Coefficients:
+                       Estimate Std. Error t value Pr(>|t|)  
+(Intercept)          -3.984e-16  2.616e-01   0.000    1.000  
+poly(scale(age), 2)1  1.968e+00  8.273e-01   2.379    0.049 *
+poly(scale(age), 2)2 -5.803e-01  8.273e-01  -0.701    0.506  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.8273 on 7 degrees of freedom
+Multiple R-squared:  0.4677,	Adjusted R-squared:  0.3156 
+F-statistic: 3.075 on 2 and 7 DF,  p-value: 0.11
+
+
+Call:
+lm(formula = scale(avgpairdist_avg) ~ poly(scale(age), 2), data = dispersionData)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-1.13570 -0.90007  0.01086  0.67899  1.50395 
+
+Coefficients:
+                       Estimate Std. Error t value Pr(>|t|)
+(Intercept)           1.531e-17  3.382e-01   0.000    1.000
+poly(scale(age), 2)1  6.246e-01  1.069e+00   0.584    0.578
+poly(scale(age), 2)2 -7.769e-01  1.069e+00  -0.726    0.491
+
+Residual standard error: 1.069 on 7 degrees of freedom
+Multiple R-squared:  0.1104,	Adjusted R-squared:  -0.1438 
+F-statistic: 0.4343 on 2 and 7 DF,  p-value: 0.664
+
+
+Call:
+lm(formula = scale(avgmfccdist) ~ poly(scale(age), 2), data = dispersionData)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-1.3098 -0.5621  0.2717  0.4253  0.9696 
+
+Coefficients:
+                       Estimate Std. Error t value Pr(>|t|)  
+(Intercept)           2.885e-16  2.861e-01   0.000   1.0000  
+poly(scale(age), 2)1 -5.201e-03  9.049e-01  -0.006   0.9956  
+poly(scale(age), 2)2 -1.808e+00  9.049e-01  -1.998   0.0859 .
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.9049 on 7 degrees of freedom
+Multiple R-squared:  0.3632,	Adjusted R-squared:  0.1812 
+F-statistic: 1.996 on 2 and 7 DF,  p-value: 0.2061
+
