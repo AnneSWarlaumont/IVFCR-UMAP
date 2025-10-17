@@ -15,6 +15,7 @@ full_spectral_data <- data.frame()
 full_wavFiles <- c()
 full_ages <- c()
 full_babies <- c()
+full_wavFiles <- c()
 min_n_clips <- 1e10
 for (f in spectral_data_files){
   spectral_data <- read.csv(paste(inputDir,f,sep=""))
@@ -30,6 +31,7 @@ for (f in spectral_data_files){
   full_ages <- c(full_ages,age_months)
   babies <- regmatches(wavFiles,regexpr("^[^_]*",wavFiles))
   full_babies <- c(full_babies,babies)
+  full_wavFiles <- c(full_wavFiles,wavFiles)
 }
 
 random_order <- sample(nrow(full_spectral_data))
@@ -37,6 +39,7 @@ full_spectral_data <- full_spectral_data[random_order,]
 full_spectral_data <- scale(full_spectral_data) # normalize each spectral feature
 full_babies <- full_babies[random_order]
 full_ages <- full_ages[random_order]
+full_wavFiles <- full_wavFiles[random_order]
 
 spec_feature_names <- c()
 spec_feature_types <- c("MFCC","dMFCC","ddMFCC")
@@ -48,10 +51,10 @@ for (t in spec_feature_types){
   }
 }
 
-csv_data <- rbind(cbind("all","scaled:center",t(attr(full_spectral_data,"scaled:center"))),
-                  cbind("all","scaled:scale",t(attr(full_spectral_data,"scaled:scale"))),
-                  cbind(full_babies,full_ages,full_spectral_data))
-colnames(csv_data) <- c("infant","age",spec_feature_names)
+csv_data <- rbind(cbind("all","scaled:center","NA",t(attr(full_spectral_data,"scaled:center"))),
+                  cbind("all","scaled:scale","NA",t(attr(full_spectral_data,"scaled:scale"))),
+                  cbind(full_babies,full_ages,full_wavFiles,full_spectral_data))
+colnames(csv_data) <- c("infant","age","wavFile",spec_feature_names)
 rownames(csv_data) <- NULL
 write.csv(csv_data,file=paste(inputDir,"all_best_clips_babies_ages_and_spectral_data.csv",sep=""),row.names = FALSE)
 
@@ -139,8 +142,8 @@ for (run in 1:nruns){
   legend("topright",inset = c(-.25, 0),legend=unique(sort(as.numeric(full_ages))),col=turbo(24)[as.numeric(c(3,6,9,18))-2],pch=19)
   dev.off()
   
-  csv_data <- cbind(full_babies,full_ages,full_data_balanced_umap_projections)
-  colnames(csv_data) <- c("infant","age","x","y")
+  csv_data <- cbind(full_babies,full_ages,full_wavFiles,full_data_balanced_umap_projections)
+  colnames(csv_data) <- c("infant","age","wavFile","x","y")
   rownames(csv_data) <- NULL
   write.csv(csv_data,file=paste(runDir,"/full_data_balanced_umap_projections.csv",sep=""),row.names = FALSE)
 }
