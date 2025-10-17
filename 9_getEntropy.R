@@ -42,16 +42,31 @@ for (run in 1:nruns){
   
 }
 
-# To-do: Get averages and standard deviations across runs and put those at the top of the entropyData table
-for (baby in babies){
-  
+write.csv(entropyData,paste(runDir,"entropyData_runLevel.csv",sep=""))
+
+pooledEntropyData <- data.frame(infant <- character(),
+                          age <- integer(),
+                          entropy_avg <- numeric(),
+                          entropy_sd <- numeric(),
+                          entropy_nRuns <- numeric())
+
+# To-do: Get averages and standard deviations across runs
+for (b in babies){
+  baby_entropyData <- subset(entropyData,baby==b)
+  avg_ent <- mean(as.numeric(baby_entropyData$this_entropy))
+  sd_ent <- sd(as.numeric(baby_entropyData$this_entropy))
+  n_runs <- nrow(baby_entropyData)
+  a <- baby_entropyData$a[1]
+  pooled_row <- data.frame(b,
+                           a,
+                           avg_ent,
+                           sd_ent,
+                           n_runs)
+  pooledEntropyData <- rbind(pooledEntropyData,pooled_row)
 }
+write.csv(pooledEntropyData,paste(runDir,"entropyData_pooled.csv",sep=""))
 
-# To-do: 
-# Export of the entropy results
-# Write script to run stats
-
-
-
-# It would be nice to show the grid superimposed on the umap plot
-# And then perhaps also show a heatmap corresponding to the histogram used in entropy calculation.
+# It could be nice to show the grid of bins used for entropy calculation
+# superimposed on the umap plot.
+# And then it could be nice to show a heat map corresponding to the histogram
+# that forms the basis of the entropy calculation.
