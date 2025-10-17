@@ -1,5 +1,3 @@
-# To-do: Update this to work on full dataset projected onto each of the balanced umap runs.
-
 library(habtools)
 library(YEAB)
 
