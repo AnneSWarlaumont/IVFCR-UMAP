@@ -1,6 +1,5 @@
 # Based on each recording's best_clip_labels*.csv file, extract each clean
-# CHN as an individual audio folder. Save in a folder with the same name as the
-# csv file.
+# CHN as an individual audio file. Save in a folder named as the labels csv.
 # Note that this runs a lot faster from the Terminal, not in RStudio, as loading
 # the big wav file using tuneR is very slow in RStudio for some reason.
 
