@@ -11,12 +11,16 @@ setwd("~/Documents/GitHub/IVFCR-UMAP/ivfcr_clips/")
 
 segments_files <- list.files(pattern = "*segments.csv")
 
-for (f in segments_files){
+for (f in segments_files[1:length(segments_files)]){
   
   segments <- read.csv(f)
-  
   fPrefix <- gsub("_segments.csv","",f)
-  participantFolder <- paste(gsub("_.*","",fPrefix),"/",sep="")
+  
+  if (length(grep("0747_ExtraRecordings",f))==0){
+    participantFolder <- paste(gsub("_.*","",fPrefix),"/",sep="")
+  } else{
+    participantFolder <- "0747_ExtraRecordings/"
+  }
   
   bigWavFile <- paste(daylongWavDir,participantFolder,fPrefix,".wav",sep="")
   
