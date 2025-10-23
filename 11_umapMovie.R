@@ -70,7 +70,8 @@ for (i in 1:nrow(b_data)){
   
   # get the number of frames the plot should show, based on the clip duration
   # and pad the audio with a little silence if needed to match the frame res
-  audio_frames <- length(wav@left) / wav@samp.rate
+  audio_dur <- length(wav@left) / wav@samp.rate
+  audio_frames <- audio_dur*fps
   n_frames <- ceiling(audio_frames)
   all_frames <- c(all_frames, rep(plot_file, n_frames))
   pad_dur <- (ceiling(audio_frames)-audio_frames)/fps
