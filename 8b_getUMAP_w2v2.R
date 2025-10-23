@@ -1,28 +1,43 @@
-library(ggplot2)
+library(umap)
 library(viridis)
-library(tuneR)
-library(av)
+library(dplyr)
 
 setwd("~/Documents/GitHub/IVFCR-UMAP")
-specFeatDir <- "best_clips_spectral_features/"
+inputDir <- "w2v2embeddings/"
 umapDir <- "umap_data/"
-wavParentDir <- "cleaning_metadata/"
 
-full_spectral_umap <- readRDS(paste(umapDir,"full_spectral_umap.rds",sep=""))
-clips_data <- read.csv(paste(specFeatDir,"all_best_clips_babies_ages_and_spectral_data.csv",sep=""))
-clips_data <- clips_data[-c(1,2),]
-rownames(clips_data) <- NULL
-babies <- levels(as.factor(clips_data$infant))
+if (!dir.exists(umapDir)){
+  dir.create(umapDir)
+}
 
-start_times <- sub("^(?:[^_]*_){2}([0-9.]+).*","\\1",clips_data$wavFile)
-end_times <- sub("^(?:[^_]*_){3}([0-9.]+).wav","\\1",clips_data$wavFile)
+f <- "196_272_w2v2.csv"
 
-baby <- babies[1] # Later can turn this into a for loop that goes through all the babies in the clean clips dataset
-indices <- which(clips_data$infant==baby)
-b_data <- data.frame(x=full_spectral_umap$layout[indices,1],y=full_spectral_umap$layout[indices,2],time=as.numeric(start_times[indices]),endtime=as.numeric(end_times[indices]),wavF=clips_data$wavFile[indices])
-b_data <- b_data[order(b_data$time),]
+emb_data <- read.csv(paste(inputDir,f,sep=""))
+random_order <- sample(nrow(emb_data))
+emb_data <- emb_data[random_order,]
+emb_data_scaled <- emb_data %>%
+  mutate(across(where(is.numeric),scale)) # normalize each embedding dimension
 
-pngDir <- paste(umapDir,baby,"_pngs/",sep="")
+write.csv(emb_data_scaled,file=paste(inputDir,"196_272_w2v2_randorder_scaled.csv",sep=""),row.names = FALSE)
+
+emb_umap <- umap(emb_data_scaled[,2:ncol(emb_data_scaled)])
+saveRDS(emb_umap,file=paste(umapDir,"emb_umap.rds",sep=""),ascii = TRUE)
+
+start_times <- sub("^(?:[^_]*_){2}([0-9.]+).*","\\1",emb_data_scaled$filename)
+end_times <- sub("^(?:[^_]*_){3}([0-9.]+).wav","\\1",emb_data_scaled$filename)
+
+e_u_df <- data.frame(x=emb_umap$layout[,1],y=emb_umap$layout[,2],time=as.numeric(start_times),endtime=as.numeric(end_times),wavF=emb_data_scaled$filename)
+
+baseplot <- ggplot(e_u_df, aes(x,y,color=time)) +
+  geom_point(size = 1, shape = 1) +
+  scale_color_viridis_c(option = "cividis") +
+  theme_minimal()
+
+baseplot
+
+b_data <- e_u_df[order(e_u_df$time),]
+baby = "196"
+pngDir <- paste(umapDir,baby,"w2v2_pngs/",sep="")
 if (!dir.exists(pngDir)){
   dir.create(pngDir)
 }
@@ -40,6 +55,8 @@ for (i in 1:nrow(b_data)){
     geom_point(data = b_data[i,], aes(x,y,color=time), size = 5, shape = 19)
   ggsave(paste(pngDir,"voc",i,"_plot.png",sep=""),width=5,height=4,dpi=300)
 }
+
+wavParentDir <- "cleaning_metadata/"
 
 fps <- 30
 prev_end <- b_data$time[1]
@@ -87,12 +104,12 @@ for (i in 1:nrow(b_data)){
 
 combined_audio <- do.call(bind, all_audio)
 combined_audio_mono <- mono(combined_audio,"left")
-comb_aud_fp <- paste(umapDir,baby,".wav",sep="")
+comb_aud_fp <- paste(umapDir,baby,"_w2v2.wav",sep="")
 writeWave(combined_audio_mono, comb_aud_fp)
 
 av_encode_video(
   input = all_frames,
-  output = paste(umapDir,baby,".mp4",sep=""),
+  output = paste(umapDir,baby,"_w2v2.mp4",sep=""),
   framerate = fps,
   audio = comb_aud_fp
 )
