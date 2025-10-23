@@ -2,3 +2,4 @@
 .Rhistory
 best_clips_spectral_features/*_spectralFeatures
 ivfcr_clips*
+umap_data/*_pngs
