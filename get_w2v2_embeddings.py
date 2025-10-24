@@ -12,9 +12,8 @@ processor = Wav2Vec2Processor.from_pretrained("facebook/wav2vec2-base-960h")
 model = Wav2Vec2Model.from_pretrained("facebook/wav2vec2-base-960h", output_hidden_states=True)
 
 audio_folder = "cleaning_metadata/best_clip_labels_196_272_wavFiles"
-output_csv = "w2v2embeddings/196_272_w2v2.csv"
 
-def get_wav2vec2_embedding(file_path):
+def get_wav2vec2_embedding(file_path,layer):
     # Load audio
     speech, sr = sf.read(file_path)
     # Prepare input for model
@@ -22,26 +21,30 @@ def get_wav2vec2_embedding(file_path):
     with torch.no_grad():
         outputs = model(input_values)
     # Use top transformer layer (most contextual)
-    embeddings = outputs.hidden_states[-1]
+    embeddings = outputs.hidden_states[layer]
     # Pool over time to get one vector per clip
     pooled_embedding = torch.mean(embeddings, dim=1).squeeze().numpy()
     return pooled_embedding
 
-# Process all audio files
-first = True
-for fname in os.listdir(audio_folder):
-    if not fname.endswith(".wav"):
-        continue
-    path = os.path.join(audio_folder, fname)
-    emb = get_wav2vec2_embedding(path)
-    row = {"filename": fname}
-    for i, v in enumerate(emb):
-        row[f"dim_{i}"] = float(v)
-    df_row = pd.DataFrame([row])
+for l in range(1,12):
 
-    if first:
-        df_row.to_csv(output_csv, index=False, mode="w")
-        first = False
-    else:
-        df_row.to_csv(output_csv, index=False, header=False, mode="a")
-    print(f"Appended {fname} to {output_csv}")
+    output_csv = "w2v2embeddings/196_272_w2v2_layer" + str(l) + ".csv"
+
+    # Process all audio files
+    first = True
+    for fname in os.listdir(audio_folder):
+        if not fname.endswith(".wav"):
+            continue
+        path = os.path.join(audio_folder, fname)
+        emb = get_wav2vec2_embedding(path,l)
+        row = {"filename": fname}
+        for i, v in enumerate(emb):
+            row[f"dim_{i}"] = float(v)
+        df_row = pd.DataFrame([row])
+
+        if first:
+            df_row.to_csv(output_csv, index=False, mode="w")
+            first = False
+        else:
+            df_row.to_csv(output_csv, index=False, header=False, mode="a")
+        print(f"Appended {fname} to {output_csv}")
