@@ -10,7 +10,7 @@ if (!dir.exists(umapDir)){
   dir.create(umapDir)
 }
 
-for (l in 1:12){
+for (l in 12:12){
 
   f <- paste("196_272_w2v2_layer",l,".csv",sep="")
   
