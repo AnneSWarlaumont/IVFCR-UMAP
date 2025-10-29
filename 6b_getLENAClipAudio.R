@@ -7,7 +7,7 @@ library(tuneR)
 setWavPlayer("/usr/bin/afplay")
 
 daylongWavDir <- "~/Library/CloudStorage/Box-Box/IVFCR\ Study/LENAExports_Renamed/"
-setwd("~/Documents/GitHub/IVFCR-UMAP/ivfcr_clips/")
+setwd("~/Library/CloudStorage/Box-Box/IVFCR\ Study/IVFCR_LENA_Segments/")
 
 segments_files <- list.files(pattern = "*segments.csv")
 
