@@ -10,8 +10,11 @@ if (!dir.exists(umapDir)){
   dir.create(umapDir)
 }
 
-for (l in 12:12){
-
+for (l in 1:12){
+  
+  lcsvpattern <- paste("layer",l,".csv",sep="")
+  w2v2_emb_files <- list.files(path=inputDir,pattern=lcsvpattern)
+  
   f <- paste("196_272_w2v2_layer",l,".csv",sep="")
   
   emb_data <- read.csv(paste(inputDir,f,sep=""))
