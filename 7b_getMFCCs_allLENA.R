@@ -7,7 +7,8 @@ setwd("~/Documents/IVFCR_LENA_Segments/")
 
 wavDirs <- list.files(pattern = "*segWavFiles")
 
-for (wavDir in wavDirs[9:length(wavDirs)]){
+#for (wavDir in wavDirs[26]){
+for (wavDir in wavDirs){
   
   clip_mfcc_d_dd_sums <- data.frame()
   clip_mfcc_d_dd_means <- data.frame()
@@ -18,7 +19,7 @@ for (wavDir in wavDirs[9:length(wavDirs)]){
     
     clip_wav <- readWave(paste(wavDir,"/",wavFile,sep=""))
     
-    if (length(clip_wav@left) / clip_wav@samp.rate >= 0.025){
+    if (length(clip_wav@left) / clip_wav@samp.rate >= 0.5){
       clip_melfcc <- melfcc(clip_wav)
       clip_deltas <- deltas(clip_melfcc)
       clip_deltadeltas <- deltas(clip_deltas)
