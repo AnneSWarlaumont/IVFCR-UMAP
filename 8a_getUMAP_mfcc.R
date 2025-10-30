@@ -15,7 +15,6 @@ full_spectral_data <- data.frame()
 full_wavFiles <- c()
 full_ages <- c()
 full_babies <- c()
-full_wavFiles <- c()
 min_n_clips <- 1e10
 for (f in spectral_data_files){
   spectral_data <- read.csv(paste(inputDir,f,sep=""))
