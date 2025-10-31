@@ -41,6 +41,9 @@ for audio_folder in audio_folders:
     else:
         id_age = audio_folder.split("best_clip_labels_")[1].split("_wavFiles")[0]
 
+    # if id_age == "0009_000302":
+    #     continue
+
     for l in range(1,13):
 
         if full_ivfcr:
