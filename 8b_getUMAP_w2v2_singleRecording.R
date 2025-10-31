@@ -1,6 +1,9 @@
 library(umap)
 library(viridis)
 library(dplyr)
+library(ggplot2)
+library(tuneR)
+library(av)
 
 setwd("~/Documents/GitHub/IVFCR-UMAP")
 inputDir <- "w2v2embeddings/"
@@ -13,6 +16,9 @@ if (!dir.exists(umapDir)){
 for (l in 1:12){
   
   f <- paste("196_272_w2v2_layer",l,".csv",sep="")
+  baby <- "196"
+  #f <- paste("344_283_w2v2_layer",l,".csv",sep="")
+  # baby = "344"
   
   emb_data <- read.csv(paste(inputDir,f,sep=""))
   random_order <- sample(nrow(emb_data))
@@ -20,26 +26,17 @@ for (l in 1:12){
   emb_data_scaled <- emb_data %>%
     mutate(across(where(is.numeric),scale)) # normalize each embedding dimension
   
-  #write.csv(emb_data_scaled,file=paste(inputDir,"196_272_w2v2_randorder_scaled.csv",sep=""),row.names = FALSE)
+  write.csv(emb_data_scaled,file=paste(inputDir,"196_272_w2v2_randorder_scaled.csv",sep=""),row.names = FALSE)
   
   emb_umap <- umap(emb_data_scaled[,2:ncol(emb_data_scaled)])
   
-  # # Customize the UMAP to have higher n_neighbors and min_dist, so emphasizing
-  # # global structure. Takes longer to run.
-  # custom_config <- umap.defaults
-  # custom_config$n_neighbors <- 100
-  # custom_config$min_dist <- 0.5
-  # emb_umap <- umap(emb_data_scaled[,2:ncol(emb_data_scaled)],config=custom_config)
-  # saveRDS(emb_umap,file="emb_umap_global.rds",ascii = TRUE)
-  
-  # emb_pc <- prcomp(t(emb_data_scaled[,2:ncol(emb_data_scaled)]))
-  # emb_2pc_rot <- emb_pc$rotation[,1:2]
+  emb_pca <- prcomp(emb_data_scaled[,2:ncol(emb_data_scaled)])
   
   start_times <- sub("^(?:[^_]*_){2}([0-9.]+).*","\\1",emb_data_scaled$filename)
   end_times <- sub("^(?:[^_]*_){3}([0-9.]+).wav","\\1",emb_data_scaled$filename)
   
-  e_u_df <- data.frame(x=emb_umap$layout[,1],y=emb_umap$layout[,2],time=as.numeric(start_times),endtime=as.numeric(end_times),wavF=emb_data_scaled$filename)
-  # e_p_df <- data.frame(x=emb_2pc_rot[,1],y=emb_2pc_rot[,2],time=as.numeric(start_times),endtime=as.numeric(end_times),wavF=emb_data_scaled$filename)
+  e_u_df <- data.frame(x=emb_umap_proj[,1],y=emb_umap$layout[,2],time=as.numeric(start_times),endtime=as.numeric(end_times),wavF=emb_data_scaled$filename)
+  e_p_df <- data.frame(x=emb_pca$x[,1],y=emb_pca$x[,2],time=as.numeric(start_times),endtime=as.numeric(end_times),wavF=emb_data_scaled$filename)
   
   e_baseplot <- ggplot(e_u_df, aes(x,y,color=time)) +
     geom_point(size = 1, shape = 1) +
@@ -48,24 +45,24 @@ for (l in 1:12){
   
   e_baseplot
   
-  # p_baseplot <- ggplot(e_u_df, aes(x,y,color=time)) +
-  #   geom_point(size = 1, shape = 1) +
-  #   scale_color_viridis_c(option = "cividis") +
-  #   theme_minimal()
-  # 
-  # p_baseplot
+  p_baseplot <- ggplot(e_p_df, aes(x,y,color=time)) +
+    geom_point(size = 1, shape = 1) +
+    scale_color_viridis_c(option = "cividis") +
+    theme_minimal()
+
+  p_baseplot
   
   b_u_data <- e_u_df[order(e_u_df$time),]
-  # b_p_data <- e_p_df[order(e_u_df$time),]
-  baby = "196"
+  b_p_data <- e_p_df[order(e_u_df$time),]
+  
   u_pngDir <- paste(umapDir,baby,"w2v2_layer",l,"_umap_pngs/",sep="")
   if (!dir.exists(u_pngDir)){
     dir.create(u_pngDir)
   }
-  # p_pngDir <- paste(umapDir,baby,"w2v2_layer",l,"_pca_pngs/",sep="")
-  # if (!dir.exists(p_pngDir)){
-  #   dir.create(p_pngDir)
-  # }
+  p_pngDir <- paste(umapDir,baby,"w2v2_layer",l,"_pca_pngs/",sep="")
+  if (!dir.exists(p_pngDir)){
+    dir.create(p_pngDir)
+  }
   
   # create base plot (all points without a current vocalization focus)
   u_baseplot <- ggplot(b_u_data, aes(x,y,color=time)) +
