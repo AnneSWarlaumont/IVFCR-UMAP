@@ -54,38 +54,38 @@ for (l in 1:12){
   emb_umap <- umap(all_embeddings)
   saveRDS(emb_umap,file=paste(umapDir,"emb_umap_w2v2layer",l,"_fullclean.rds",sep=""),ascii = TRUE)
   
-  emb_pc <- prcomp(t(all_embeddings))
-  saveRDS(ebm_pc,file=paste(umapDir,"emb_pca_w2v2layer",l,"_fullclean.rds",sep=""),ascii = TRUE)
-  emb_2pc_x <- emb_pc$x[,1:2]
+  emb_pca <- prcomp(all_embeddings)
+  saveRDS(emb_pca,file=paste(umapDir,"emb_pca_w2v2layer",l,"_fullclean.rds",sep=""),ascii = TRUE)
   
   start_times <- sub("^(?:[^_]*_){2}([0-9.]+).*","\\1",full_wavFiles)
   end_times <- sub("^(?:[^_]*_){3}([0-9.]+).wav","\\1",full_wavFiles)
-  emb_umap_df <- data.frame(x=emb_umap$layout[,1],y=emb_umap$layout[,2],time=as.numeric(start_times),endtime=as.numeric(end_times),full_wavFiles,baby=full_babies,age=full_ages)
-  emb_pca2_df <- data.frame(x=emb_2pc_rot[,1],y=emb_2pc_rot[,2],time=as.numeric(start_times),endtime=as.numeric(end_times),full_wavFiles,baby=full_babies,age=full_ages)
   
-  emb_umap_df <- emb_umap_df[order(emb_umap_df$time),]
-  emb_pca2_df <- emb_pca2_df[order(emb_pca2_df$time),]
+  emb_u_df <- data.frame(x=emb_umap$layout[,1],y=emb_umap$layout[,2],time=as.numeric(start_times),endtime=as.numeric(end_times),full_wavFiles,baby=full_babies,age=full_ages)
+  emb_p_df <- data.frame(x=emb_pca$x[,1],y=emb_pca$x[,2],time=as.numeric(start_times),endtime=as.numeric(end_times),full_wavFiles,baby=full_babies,age=full_ages)
   
-  umap_pngDir <- paste(umapDir,"allclean_w2v2_layer",l,"_umap_pngs/",sep="")
-  if (!dir.exists(umap_pngDir)){
-    dir.create(umap_pngDir)
-  }
-  pca2_pngDir <- paste(umapDir,"allclean_w2v2_layer",l,"_pca2_pngs/",sep="")
-  if (!dir.exists(pca2_pngDir)){
-    dir.create(pca2_pngDir)
-  }
+  emb_u_df <- emb_u_df[order(emb_u_df$time),]
+  emb_p_df <- emb_p_df[order(emb_p_df$time),]
+  
+  # umap_pngDir <- paste(umapDir,"allclean_w2v2_layer",l,"_umap_pngs/",sep="")
+  # if (!dir.exists(umap_pngDir)){
+  #   dir.create(umap_pngDir)
+  # }
+  # pca_pngDir <- paste(umapDir,"allclean_w2v2_layer",l,"_pca_pngs/",sep="")
+  # if (!dir.exists(pca_pngDir)){
+  #   dir.create(pca_pngDir)
+  # }
   
   # create base plot (all points without a current vocalization focus)
-  baseplot_umap <- ggplot(emb_umap_df, aes(x,y,color=age)) +
+  baseplot_umap <- ggplot(emb_u_df, aes(x,y,color=age)) +
     geom_point(size = 1, shape = 1) +
     scale_color_viridis_c(option = "viridis", begin = 3/18, direction=-1) +
     theme_minimal()
-  ggsave(paste(pngDir,"baseplot_umap.png",sep=""),width=5,height=4,dpi=300)
+  ggsave(paste(umapDir,"baseplot_umap_w2v2_layer",l,".png",sep=""),width=5,height=4,dpi=300)
   
-  baseplot_pca2 <- ggplot(emb_pca2_df, aes(x,y,color=age)) +
+  baseplot_pca <- ggplot(emb_p_df, aes(x,y,color=age)) +
     geom_point(size = 1, shape = 1) +
     scale_color_viridis_c(option = "viridis", begin = 3/18, direction=-1) +
     theme_minimal()
-  ggsave(paste(pngDir,"baseplot_pca2.png",sep=""),width=5,height=4,dpi=300)
+  ggsave(paste(umapDir,"baseplot_pca_w2v2_layer",l,".png",sep=""),width=5,height=4,dpi=300)
 
 }
