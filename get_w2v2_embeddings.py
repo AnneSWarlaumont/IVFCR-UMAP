@@ -13,18 +13,24 @@ model = Wav2Vec2Model.from_pretrained("facebook/wav2vec2-base-960h", output_hidd
 
 full_ivfcr = True
 
-def get_wav2vec2_embedding(file_path,layer):
-    # Load audio
+def get_all_layer_embeddings(file_path):
     speech, sr = sf.read(file_path)
+    
+    # If the wav is longer than 30 s, truncate
+    max_samples = int(sr * 30)
+    if len(speech) > max_samples:
+        speech = speech[:max_samples]
+
     # Prepare input for model
     input_values = processor(speech.squeeze(), sampling_rate=16000, return_tensors="pt").input_values
     with torch.no_grad():
         outputs = model(input_values)
-    # Use top transformer layer (most contextual)
-    embeddings = outputs.hidden_states[layer]
-    # Pool over time to get one vector per clip
-    pooled_embedding = torch.mean(embeddings, dim=1).squeeze().numpy()
-    return pooled_embedding
+    layer_map = {}
+    for idx, embeddings in enumerate(outputs.hidden_states):
+        pooled = torch.mean(embeddings, dim=1).squeeze()
+        pooled = pooled.cpu().numpy()
+        layer_map[idx] = pooled
+    return layer_map
 
 if full_ivfcr:
     audio_folders = glob.glob(os.path.expanduser('~/Documents/IVFCR_LENA_Segments/*segWavFiles'))
@@ -41,28 +47,34 @@ for audio_folder in audio_folders:
     else:
         id_age = audio_folder.split("best_clip_labels_")[1].split("_wavFiles")[0]
 
-    # if id_age == "0009_000302":
+    # if id_age == "0009_000302" or id_age == "0437_000902" or id_age=="0196_000607":
     #     continue
 
-    for l in range(1,13):
+    # Process all audio files
+    first = True
+    for fname in os.listdir(audio_folder):
+        
+        if not fname.endswith(".wav"):
+            continue
+        path = os.path.join(audio_folder, fname)
+        layer_map = get_all_layer_embeddings(path)
 
-        if full_ivfcr:
-            output_csv = os.path.expanduser("~/Documents/IVFCR_LENA_Segments/w2v2embeddings/" + id_age + "_w2v2_layer" + str(l) + ".csv")
-            print(output_csv)
-        else:
-            output_csv = "w2v2embeddings/" + id_age + "_w2v2_layer" + str(l) + ".csv"
+        for l in range(1,13):
 
-        # Process all audio files
-        first = True
-        for fname in os.listdir(audio_folder):
-            if not fname.endswith(".wav"):
+            emb = layer_map.get(l)
+            if emb is None:
                 continue
-            path = os.path.join(audio_folder, fname)
-            emb = get_wav2vec2_embedding(path,l)
+
             row = {"filename": fname}
             for i, v in enumerate(emb):
                 row[f"dim_{i}"] = float(v)
             df_row = pd.DataFrame([row])
+
+            if full_ivfcr:
+                output_csv = os.path.expanduser("~/Documents/IVFCR_LENA_Segments/w2v2embeddings/" + id_age + "_w2v2_layer" + str(l) + ".csv")
+                print(output_csv)
+            else:
+                output_csv = "w2v2embeddings/" + id_age + "_w2v2_layer" + str(l) + ".csv"
 
             if first:
                 df_row.to_csv(output_csv, index=False, mode="w")
@@ -70,3 +82,5 @@ for audio_folder in audio_folders:
             else:
                 df_row.to_csv(output_csv, index=False, header=False, mode="a")
             print(f"Appended {fname} to {output_csv}")
+
+        

@@ -5,3 +5,4 @@ ivfcr_clips*
 umap_data/*_pngs
 venv*
 hf_cache*
+*.zip

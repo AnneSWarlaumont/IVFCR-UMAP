@@ -74,7 +74,7 @@ saveRDS(full_spectral_umap,file=paste(umapDir,"full_spectral_umap.rds",sep=""),a
 ###############################################################################
 
 # To-do: Perform the random selection of balanced data a bunch of times
-# and average over those different UMAP runs...
+# so later analyses can average over those different UMAP runs.
 
 # Subsample the data so that across age groups, the number of participants and
 # the number of samples per participant are constant. For # of participants,
@@ -146,16 +146,3 @@ for (run in 1:nruns){
   rownames(csv_data) <- NULL
   write.csv(csv_data,file=paste(runDir,"/full_data_balanced_umap_projections.csv",sep=""),row.names = FALSE)
 }
-
-# # Customize the UMAP to have higher n_neighbors and min_dist, so emphasizing
-# # global structure. Takes longer to run.
-# custom_config <- umap.defaults
-# custom_config$n_neighbors <- 50
-# custom_config$min_dist <- 0.5
-# custom_balanced_umap <- umap(balanced_spectral_data,config=custom_config)
-# pdf("custom_balanced_umap.pdf")
-# par(mar = c(5.1, 4.1, 4.1, 8.1), xpd = TRUE)
-# plot(custom_balanced_umap$layout[,1],custom_balanced_umap$layout[,2],col=cols)
-# legend("topright",inset = c(-.25, 0),legend=unique(sort(as.numeric(balanced_data_ages))),col=turbo(24)[as.numeric(c(3,6,9,18))-2],pch=19)
-# dev.off()
-# saveRDS(custom_balanced_umap,file="custom_balanced_umap.rds",ascii = TRUE)

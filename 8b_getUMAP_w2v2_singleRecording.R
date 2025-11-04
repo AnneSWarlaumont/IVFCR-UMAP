@@ -15,10 +15,8 @@ if (!dir.exists(umapDir)){
 
 for (l in 1:12){
   
-  f <- paste("196_272_w2v2_layer",l,".csv",sep="")
-  baby <- "196"
-  #f <- paste("344_283_w2v2_layer",l,".csv",sep="")
-  # baby = "344"
+  f <- paste("54_183_w2v2_layer",l,".csv",sep="")
+  baby <- "54"
   
   emb_data <- read.csv(paste(inputDir,f,sep=""))
   random_order <- sample(nrow(emb_data))
@@ -114,7 +112,7 @@ for (l in 1:12){
     if (pause_sec>0){
       silent_seconds <- round(log10(pause_sec+1)*fps)/fps
       all_frames_umap <- c(all_frames_umap, rep(paste(u_pngDir,"umap_baseplot.png",sep=""), silent_seconds*fps))
-      all_frames_pca <- c(all_frames_pca, rep(paste(p_pngDir,"umap_baseplot.png",sep=""), silent_seconds*fps))
+      all_frames_pca <- c(all_frames_pca, rep(paste(p_pngDir,"pca_baseplot.png",sep=""), silent_seconds*fps))
       if (l==1){
         silent <- silence(duration = silent_seconds, xunit = "time", samp.rate = wav@samp.rate, bit = 16, pcm = TRUE)
         all_audio <- c(all_audio, silent) 
