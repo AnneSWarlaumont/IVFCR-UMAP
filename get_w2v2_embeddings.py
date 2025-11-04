@@ -47,13 +47,13 @@ for audio_folder in audio_folders:
     else:
         id_age = audio_folder.split("best_clip_labels_")[1].split("_wavFiles")[0]
 
-    # if id_age == "0009_000302" or id_age == "0437_000902" or id_age=="0196_000607":
-    #     continue
+    if id_age == "0009_000302" or id_age == "0437_000902" # or id_age=="0196_000607":
+        continue
 
     # Process all audio files
     first = True
     for fname in os.listdir(audio_folder):
-        
+
         if not fname.endswith(".wav"):
             continue
         path = os.path.join(audio_folder, fname)

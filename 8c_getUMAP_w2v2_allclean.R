@@ -13,7 +13,6 @@ if (!dir.exists(umapDir)){
   dir.create(umapDir)
 }
 
-# l <- 1 (for development purposes)
 for (l in 1:12){
   
   lcsvpattern <- paste("layer",l,".csv",sep="")
@@ -24,7 +23,6 @@ for (l in 1:12){
   full_babies <- c()
   min_n_clips <- 1e10
   
-  # f <- w2v2_emb_files[1] (for development purposes)
   for (f in w2v2_emb_files){
     emb_data <- read.csv(paste(inputDir,f,sep=""))
     if (nrow(emb_data) < min_n_clips){
@@ -49,7 +47,9 @@ for (l in 1:12){
   full_ages <- full_ages[random_order]
   full_wavFiles <- full_wavFiles[random_order]
   
-  write.csv(all_embeddings,file=paste(inputDir,"all_embeddings_scaled.csv",sep=""),row.names = FALSE)
+  csv_data <- cbind(full_babies,full_ages,full_wavFiles,all_embeddings)
+  colnames(csv_data) <- c("infant","age","wavFile",names(emb_data))
+  write.csv(csv_data,file=paste(inputDir,"all_emb_scaled_layer",l,".csv",sep=""),row.names = FALSE)
   
   emb_umap <- umap(all_embeddings)
   saveRDS(emb_umap,file=paste(umapDir,"emb_umap_w2v2layer",l,"_fullclean.rds",sep=""),ascii = TRUE)
