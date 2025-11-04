@@ -66,15 +66,6 @@ for (l in 1:12){
   emb_u_df <- emb_u_df[order(emb_u_df$time),]
   emb_p_df <- emb_p_df[order(emb_p_df$time),]
   
-  # umap_pngDir <- paste(umapDir,"allclean_w2v2_layer",l,"_umap_pngs/",sep="")
-  # if (!dir.exists(umap_pngDir)){
-  #   dir.create(umap_pngDir)
-  # }
-  # pca_pngDir <- paste(umapDir,"allclean_w2v2_layer",l,"_pca_pngs/",sep="")
-  # if (!dir.exists(pca_pngDir)){
-  #   dir.create(pca_pngDir)
-  # }
-  
   # create base plot (all points without a current vocalization focus)
   baseplot_umap <- ggplot(emb_u_df, aes(x,y,color=age)) +
     geom_point(size = 1, shape = 1) +
