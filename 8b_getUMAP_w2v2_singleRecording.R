@@ -15,7 +15,8 @@ if (!dir.exists(umapDir)){
 
 for (l in 1:12){
   
-  f <- paste("54_183_w2v2_layer",l,".csv",sep="")
+  f_base <-  paste("54_183_w2v2_layer",l,sep="")
+  f <- paste(f_base,".csv",sep="")
   baby <- "54"
   
   emb_data <- read.csv(paste(inputDir,f,sep=""))
@@ -24,7 +25,7 @@ for (l in 1:12){
   emb_data_scaled <- emb_data %>%
     mutate(across(where(is.numeric),scale)) # normalize each embedding dimension
   
-  write.csv(emb_data_scaled,file=paste(inputDir,"196_272_w2v2_randorder_scaled.csv",sep=""),row.names = FALSE)
+  write.csv(emb_data_scaled,file=paste(inputDir,f_base,"_w2v2_layer",l,"randorder_scaled.csv",sep=""),row.names = FALSE)
   
   emb_umap <- umap(emb_data_scaled[,2:ncol(emb_data_scaled)])
   
