@@ -7,6 +7,11 @@ from transformers import Wav2Vec2Processor, Wav2Vec2Model
 import os
 import glob
 import pandas as pd
+from collections import defaultdict
+from tqdm import tqdm
+
+torch.set_num_threads(1)
+torch.set_num_interop_threads(1)
 
 processor = Wav2Vec2Processor.from_pretrained("facebook/wav2vec2-base-960h")
 model = Wav2Vec2Model.from_pretrained("facebook/wav2vec2-base-960h", output_hidden_states=True)
@@ -27,7 +32,7 @@ def get_all_layer_embeddings(file_path):
         outputs = model(input_values)
     layer_map = {}
     for idx, embeddings in enumerate(outputs.hidden_states):
-        pooled = torch.mean(embeddings, dim=1).squeeze()
+        pooled = torch.mean(embeddings, dim=1)[0]
         pooled = pooled.cpu().numpy()
         layer_map[idx] = pooled
     return layer_map
@@ -42,20 +47,20 @@ for audio_folder in audio_folders:
 
     print(audio_folder)
 
+    layer_buffers = defaultdict(list)
+
     if full_ivfcr:
         id_age = audio_folder.split("/")[-1].split("_segWavFiles")[0]
     else:
         id_age = audio_folder.split("best_clip_labels_")[1].split("_wavFiles")[0]
 
-    if id_age == "0009_000302" or id_age == "0437_000902" # or id_age=="0196_000607":
+    if id_age == "0009_000302" or id_age == "0437_000902" or id_age=="0196_000607" or id_age=="0223_000600" or id_age=="0583_010604" or id_age=="0656_000302" or id_age=="0009_000901" or id_age=="384B_000903" or id_age=="0932_000602b" or id_age=="0840_010603" or id_age=="0973_000304":
         continue
 
     # Process all audio files
-    first = True
-    for fname in os.listdir(audio_folder):
+    audio_files = [f for f in os.listdir(audio_folder) if f.endswith(".wav")]
+    for fname in tqdm(audio_files, desc=f"Processing {id_age}", unit="file"):
 
-        if not fname.endswith(".wav"):
-            continue
         path = os.path.join(audio_folder, fname)
         layer_map = get_all_layer_embeddings(path)
 
@@ -68,19 +73,15 @@ for audio_folder in audio_folders:
             row = {"filename": fname}
             for i, v in enumerate(emb):
                 row[f"dim_{i}"] = float(v)
-            df_row = pd.DataFrame([row])
 
-            if full_ivfcr:
-                output_csv = os.path.expanduser("~/Documents/IVFCR_LENA_Segments/w2v2embeddings/" + id_age + "_w2v2_layer" + str(l) + ".csv")
-                print(output_csv)
-            else:
-                output_csv = "w2v2embeddings/" + id_age + "_w2v2_layer" + str(l) + ".csv"
+            layer_buffers[l].append(row)
 
-            if first:
-                df_row.to_csv(output_csv, index=False, mode="w")
-                first = False
-            else:
-                df_row.to_csv(output_csv, index=False, header=False, mode="a")
-            print(f"Appended {fname} to {output_csv}")
+    for l, rows in layer_buffers.items():
+        if full_ivfcr:
+            output_csv = os.path.expanduser("~/Documents/IVFCR_LENA_Segments/w2v2embeddings/" + id_age + "_w2v2_layer" + str(l) + ".csv")
+        else:
+            output_csv = "w2v2embeddings/" + id_age + "_w2v2_layer" + str(l) + ".csv"
+        df = pd.DataFrame(rows)
+        df.to_csv(output_csv,index=False)
 
         
