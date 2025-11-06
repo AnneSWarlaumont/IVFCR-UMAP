@@ -9,6 +9,7 @@ import glob
 import pandas as pd
 from collections import defaultdict
 from tqdm import tqdm
+import csv
 
 torch.set_num_threads(1)
 torch.set_num_interop_threads(1)
@@ -58,30 +59,46 @@ for audio_folder in audio_folders:
         continue
 
     # Process all audio files
+
     audio_files = [f for f in os.listdir(audio_folder) if f.endswith(".wav")]
+
+    # Open 12 CSV writers *once* per folder, append mode
+    writers = {}
+    for l in range(1,13): # 1 through 12 inclusive
+
+        if full_ivfcr:
+            output_csv = os.path.expanduser(
+                f"~/Documents/IVFCR_LENA_Segments/w2v2embeddings/{id_age}_w2v2_layer{l}.csv"
+            )
+        else:
+            output_csv = f"w2v2embeddings/{id_age}_w2v2_layer{l}.csv"
+    
+        # Write header if file doesn't exist yet
+        write_header = not os.path.exists(output_csv)
+        f = open(output_csv,"a",newline="")
+        w = csv.writer(f)
+        if write_header:
+            w.writerow(["filename"] + [f"dim_{i}" for i in range(768)])
+        writers[l] = (f,w)
+
+    print(f"Opened CSV writers for layers: {list(writers.keys())}")
+
     for fname in tqdm(audio_files, desc=f"Processing {id_age}", unit="file"):
 
         path = os.path.join(audio_folder, fname)
         layer_map = get_all_layer_embeddings(path)
 
         for l in range(1,13):
-
             emb = layer_map.get(l)
-            if emb is None:
-                continue
+            if emb is not None:
+                writers[l][1].writerow([fname] + emb.tolist())
 
-            row = {"filename": fname}
-            for i, v in enumerate(emb):
-                row[f"dim_{i}"] = float(v)
+        # Free tensors
+        del layer_map
+        torch.cuda.empty_cache() if torch.cuda.is_available() else None
 
-            layer_buffers[l].append(row)
-
-    for l, rows in layer_buffers.items():
-        if full_ivfcr:
-            output_csv = os.path.expanduser("~/Documents/IVFCR_LENA_Segments/w2v2embeddings/" + id_age + "_w2v2_layer" + str(l) + ".csv")
-        else:
-            output_csv = "w2v2embeddings/" + id_age + "_w2v2_layer" + str(l) + ".csv"
-        df = pd.DataFrame(rows)
-        df.to_csv(output_csv,index=False)
+    # Close all CSV files
+    for f, _ in writers.values():
+        f.close()
 
         
