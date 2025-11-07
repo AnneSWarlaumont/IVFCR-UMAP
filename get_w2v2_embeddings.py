@@ -1,7 +1,6 @@
 # This code was written with help from ChatGPT and GitHub Copilot. It extracts Wav2Vec2 embeddings from audio files
 # and saves them into CSV files, one for each transformer layer of the model.
 
-import soundfile as sf
 import torch
 from transformers import Wav2Vec2Processor, Wav2Vec2Model
 import os
@@ -10,6 +9,9 @@ import pandas as pd
 from collections import defaultdict
 from tqdm import tqdm
 import csv
+import soundfile as sf
+import numpy as np
+import gc
 
 torch.set_num_threads(1)
 torch.set_num_interop_threads(1)
@@ -20,17 +22,37 @@ model = Wav2Vec2Model.from_pretrained("facebook/wav2vec2-base-960h", output_hidd
 full_ivfcr = True
 
 def get_all_layer_embeddings(file_path):
-    speech, sr = sf.read(file_path)
-    
-    # If the wav is longer than 30 s, truncate
-    max_samples = int(sr * 30)
-    if len(speech) > max_samples:
-        speech = speech[:max_samples]
+
+    max_duration = 30 # in seconds
+
+    # Open the sound file
+    try:
+        with sf.SoundFile(file_path,'r') as track:
+            sr = track.samplerate
+
+            # Calculate the number of frames to read
+            max_frames = sr * max_duration
+
+            # Read only the first max_frames (or fewer if the file is shorter)
+            # The .read() function automatically handles seeking from the start if not specified otherwise
+            speech = track.read(frames=max_frames, dtype='float32')
+
+    except Exception as e:
+        print(f"Error reading audio file {file_path}: {e}")
+        return None
+
+    # If stereo, convert to mono by averaging channels
+    if speech.ndim > 1 and speech.shape[1] > 1:
+        speech = np.mean(speech, axis=1)
 
     # Prepare input for model
+    if sr != 16000:
+        print(f"Warning: Audio file has sample rate {sr} Hz; 16 kHz expected.")
     input_values = processor(speech.squeeze(), sampling_rate=16000, return_tensors="pt").input_values
+
     with torch.no_grad():
         outputs = model(input_values)
+    
     layer_map = {}
     for idx, embeddings in enumerate(outputs.hidden_states):
         pooled = torch.mean(embeddings, dim=1)[0]
@@ -96,6 +118,7 @@ for audio_folder in audio_folders:
         # Free tensors
         del layer_map
         torch.cuda.empty_cache() if torch.cuda.is_available() else None
+        gc.collect()
 
     # Close all CSV files
     for f, _ in writers.values():

@@ -13,11 +13,12 @@ if (!dir.exists(umapDir)){
   dir.create(umapDir)
 }
 
+baby <- "54"
+
 for (l in 1:12){
   
   f_base <-  paste("54_183_w2v2_layer",l,sep="")
   f <- paste(f_base,".csv",sep="")
-  baby <- "54"
   
   emb_data <- read.csv(paste(inputDir,f,sep=""))
   random_order <- sample(nrow(emb_data))
@@ -101,23 +102,19 @@ for (l in 1:12){
     # set the pause time before dot and audio should appear
     pause_sec <- b_u_data$time[i]-prev_end
     
-    if (l==1){
-      # read in this voc's wav file
-      iWavF <- b_u_data$wavF[i]
-      rec <- sub("^((?:[^_]*_){2}).*","\\1",iWavF)
-      iWavFP <- paste(wavParentDir,"best_clip_labels_",rec,"wavFiles/",iWavF,sep="")
-      wav <- readWave(iWavFP)
-    }
+    # read in this voc's wav file
+    iWavF <- b_u_data$wavF[i]
+    rec <- sub("^((?:[^_]*_){2}).*","\\1",iWavF)
+    iWavFP <- paste(wavParentDir,"best_clip_labels_",rec,"wavFiles/",iWavF,sep="")
+    wav <- readWave(iWavFP)
     
     # create the silent pause on the baseplot image and, if applicable, in the audio file
     if (pause_sec>0){
       silent_seconds <- round(log10(pause_sec+1)*fps)/fps
       all_frames_umap <- c(all_frames_umap, rep(paste(u_pngDir,"umap_baseplot.png",sep=""), silent_seconds*fps))
       all_frames_pca <- c(all_frames_pca, rep(paste(p_pngDir,"pca_baseplot.png",sep=""), silent_seconds*fps))
-      if (l==1){
-        silent <- silence(duration = silent_seconds, xunit = "time", samp.rate = wav@samp.rate, bit = 16, pcm = TRUE)
-        all_audio <- c(all_audio, silent) 
-      }
+      silent <- silence(duration = silent_seconds, xunit = "time", samp.rate = wav@samp.rate, bit = 16, pcm = TRUE)
+      all_audio <- c(all_audio, silent) 
     }
     
     u_plot_file <- paste(u_pngDir,"voc",i,"_u_plot.png",sep="")
@@ -128,31 +125,25 @@ for (l in 1:12){
     audio_dur <- length(wav@left) / wav@samp.rate
     audio_frames <- audio_dur*fps
     n_frames <- ceiling(audio_frames)
+    pad_dur <- (ceiling(audio_frames)-audio_frames)/fps
+    if (pad_dur > 0){
+      pad <- silence(duration = pad_dur, xunit = "time", samp.rate = wav@samp.rate, bit = 16, pcm = TRUE)
+      all_audio <- c(all_audio, wav, pad)
+    } else{
+      all_audio <- c(all_audio, wav)
+    } 
     all_frames_umap <- c(all_frames_umap, rep(u_plot_file, n_frames))
     all_frames_pca <- c(all_frames_pca, rep(p_plot_file, n_frames))
-    if (l==1){
-      pad_dur <- (ceiling(audio_frames)-audio_frames)/fps
-      if (pad_dur > 0){
-        pad <- silence(duration = pad_dur, xunit = "time", samp.rate = wav@samp.rate, bit = 16, pcm = TRUE)
-        all_audio <- c(all_audio, wav, pad)
-      } else{
-        all_audio <- c(all_audio, wav)
-      } 
-    }
     
     # set the previous end time to the end of the current vocalization, setting up for the next voc
     prev_end <- b_u_data$endtime[i]
     
-    if (l==1){
-      combined_audio <- do.call(bind, all_audio)
-      combined_audio_mono <- mono(combined_audio,"left")
-    }
+    combined_audio <- do.call(bind, all_audio)
+    combined_audio_mono <- mono(combined_audio,"left")
     
   }
     
-  if (l==1){
-    writeWave(combined_audio_mono, comb_aud_file) 
-  }
+  writeWave(combined_audio_mono, comb_aud_file) 
   
   av_encode_video(
     input = all_frames_umap,
