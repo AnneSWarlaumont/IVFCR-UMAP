@@ -1,4 +1,4 @@
-# This code was written with help from ChatGPT and GitHub Copilot. It extracts Wav2Vec2 embeddings from audio files
+# This code was written with a lot of help from ChatGPT, GitHub Copilot, and Google AI. It extracts Wav2Vec2 embeddings from audio files
 # and saves them into CSV files, one for each transformer layer of the model.
 
 import torch
@@ -21,7 +21,9 @@ model = Wav2Vec2Model.from_pretrained("facebook/wav2vec2-base-960h", output_hidd
 
 full_ivfcr = True
 
-def get_all_layer_embeddings(file_path):
+###
+
+def get_input_values(file_path):
 
     max_duration = 30 # in seconds
 
@@ -35,20 +37,24 @@ def get_all_layer_embeddings(file_path):
 
             # Read only the first max_frames (or fewer if the file is shorter)
             # The .read() function automatically handles seeking from the start if not specified otherwise
-            speech = track.read(frames=max_frames, dtype='float32')
+            clip_sound = track.read(frames=max_frames, dtype='float32')
 
     except Exception as e:
         print(f"Error reading audio file {file_path}: {e}")
         return None
 
     # If stereo, convert to mono by averaging channels
-    if speech.ndim > 1 and speech.shape[1] > 1:
-        speech = np.mean(speech, axis=1)
+    if clip_sound.ndim > 1 and clip_sound.shape[1] > 1:
+        clip_sound = np.mean(clip_sound, axis=1)
 
     # Prepare input for model
     if sr != 16000:
         print(f"Warning: Audio file has sample rate {sr} Hz; 16 kHz expected.")
-    input_values = processor(speech.squeeze(), sampling_rate=16000, return_tensors="pt").input_values
+    input_values = processor(clip_sound.squeeze(), sampling_rate=16000, return_tensors="pt").input_values
+
+    return input_values
+
+def get_all_layer_embeddings(clip_sound):
 
     with torch.no_grad():
         outputs = model(input_values)
@@ -59,6 +65,8 @@ def get_all_layer_embeddings(file_path):
         pooled = pooled.cpu().numpy()
         layer_map[idx] = pooled
     return layer_map
+
+####
 
 if full_ivfcr:
     audio_folders = glob.glob(os.path.expanduser('~/Documents/IVFCR_LENA_Segments/*segWavFiles'))
@@ -106,9 +114,18 @@ for audio_folder in audio_folders:
     print(f"Opened CSV writers for layers: {list(writers.keys())}")
 
     for fname in tqdm(audio_files, desc=f"Processing {id_age}", unit="file"):
+    #for fname in audio_files:
+
+        #print(f"Processing clip {fname}")
 
         path = os.path.join(audio_folder, fname)
-        layer_map = get_all_layer_embeddings(path)
+
+        input_values = get_input_values(path)
+
+        if input_values.size(1) < .5*16000:
+            continue
+        
+        layer_map = get_all_layer_embeddings(input_values)
 
         for l in range(1,13):
             emb = layer_map.get(l)
