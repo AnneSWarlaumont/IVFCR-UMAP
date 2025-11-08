@@ -85,7 +85,8 @@ for audio_folder in audio_folders:
     else:
         id_age = audio_folder.split("best_clip_labels_")[1].split("_wavFiles")[0]
 
-    if id_age == "0009_000302" or id_age == "0437_000902" or id_age=="0196_000607" or id_age=="0223_000600" or id_age=="0583_010604" or id_age=="0656_000302" or id_age=="0009_000901" or id_age=="384B_000903" or id_age=="0932_000602b" or id_age=="0840_010603" or id_age=="0973_000304":
+    if id_age == "0340_000301":
+    # if id_age == "0340_000301" or "0009_000302" or id_age == "0437_000902" or id_age=="0196_000607" or id_age=="0223_000600" or id_age=="0583_010604" or id_age=="0656_000302" or id_age=="0009_000901" or id_age=="384B_000903" or id_age=="0932_000602b" or id_age=="0840_010603" or id_age=="0973_000304":
         continue
 
     # Process all audio files

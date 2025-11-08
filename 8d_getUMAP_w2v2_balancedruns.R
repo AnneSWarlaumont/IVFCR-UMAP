@@ -33,7 +33,7 @@ for (run in 1:nruns){
       min_n_babies <- min(sapply(babies_by_age, length))
     }
     
-    runDir <- paste("w2v2balancedRun",run,sep="")
+    runDir <- paste("w2v2_balancedRunData/w2v2balancedRun",run,"_layer",l,sep="")
     if (!dir.exists(runDir)){
       dir.create(runDir)
     }

@@ -53,7 +53,7 @@ for (l in 1:12){
   p_baseplot
   
   b_u_data <- e_u_df[order(e_u_df$time),]
-  b_p_data <- e_p_df[order(e_u_df$time),]
+  b_p_data <- e_p_df[order(e_p_df$time),]
   
   u_pngDir <- paste(umapDir,baby,"w2v2_layer",l,"_umap_pngs/",sep="")
   if (!dir.exists(u_pngDir)){
