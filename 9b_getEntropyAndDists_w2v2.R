@@ -12,13 +12,12 @@ entropyData <- data.frame(w2v2Layer <- integer(),
                           projections_entropy <- numeric(),
                           projections_avgpairdist <- numeric())
 
+w2v2Data <- read.csv("w2v2embeddings/all_emb_scaled_layer1.csv")
+age_levels <- levels(as.factor(w2v2Data$age))
+babies <- levels(as.factor(w2v2Data$infant))
+nruns <- 10
+
 for (l in 1:12){
-  
-  w2v2Data <- read.csv(paste("w2v2embeddings/all_emb_scaled_layer",l,".csv",sep=""))
-  age_levels <- levels(as.factor(w2v2Data$age))
-  babies <- levels(as.factor(w2v2Data$infant))
-  
-  nruns <- 10
   
   for (run in 1:nruns){
     
@@ -57,4 +56,59 @@ for (l in 1:12){
   
 }
 
-# HERE (see 9a) lin 55
+write.csv(entropyData,"umap_data/w2v2_entropyData_runLevel.csv",row.names = FALSE)
+
+pooledEntropyData <- data.frame(w2v2Layer <- integer(),
+                                infant <- character(),
+                                age <- integer(),
+                                entropy_avg <- numeric(),
+                                entropy_sd <- numeric(),
+                                avgpairdist_avg <- numeric(),
+                                avgpairdist_sd <- numeric(),
+                                avgw2v2dist <- numeric(),
+                                nRuns <- numeric())
+
+# Get averages and standard deviations of entropy and avg umap dist across runs
+# Also get the avg w2v2 features dist
+
+for (l in 1:12){
+  
+  w2v2Data <- read.csv(paste("w2v2embeddings/all_emb_scaled_layer",l,".csv",sep=""))
+  
+  for (b in babies){
+    
+    # umap and metadata
+    this_entropyData <- subset(entropyData,(baby==b & w2v2Layer==l))
+    avg_ent <- mean(as.numeric(this_entropyData$this_entropy))
+    sd_ent <- sd(as.numeric(this_entropyData$this_entropy))
+    avg_avgpairdist <- mean(as.numeric(this_entropyData$this_meandist))
+    sd_avgpairdist <- sd(as.numeric(this_entropyData$this_meandist))
+    n_runs <- nrow(this_entropyData)
+    a <- this_entropyData$a[1]
+    
+    # w2v2 features (no umap)
+    this_w2v2Data <- subset(w2v2Data,infant==b, select = -c(infant,age,wavFile))
+    distvec <- as.vector(dist(this_w2v2Data))
+    this_meanw2v2dist <- mean(distvec)
+    
+    #store
+    pooled_row <- data.frame(w2v2Layer = l,
+                             infant = b,
+                             age = a,
+                             entropy_avg = avg_ent,
+                             entropy_sd = sd_ent,
+                             avgpairdist_avg = avg_avgpairdist,
+                             avgpairdist_sd = sd_avgpairdist,
+                             avgmfccdist = this_meanw2v2dist,
+                             nRuns = n_runs)
+    pooledEntropyData <- rbind(pooledEntropyData,pooled_row)
+    
+  }
+}
+
+write.csv(pooledEntropyData,"w2v2dispersionData.csv",row.names = FALSE)
+
+# It could be nice to show the grid of bins used for entropy calculation
+# superimposed on the umap plot.
+# And then it could be nice to show a heat map corresponding to the histogram
+# that forms the basis of the entropy calculation.
