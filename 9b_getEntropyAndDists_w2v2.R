@@ -71,7 +71,7 @@ pooledEntropyData <- data.frame(w2v2Layer <- integer(),
 # Get averages and standard deviations of entropy and avg umap dist across runs
 # Also get the avg w2v2 features dist
 
-for (l in 1:12){
+for (layer in 1:12){
   
   w2v2Data <- read.csv(paste("w2v2embeddings/all_emb_scaled_layer",l,".csv",sep=""))
   
@@ -92,7 +92,7 @@ for (l in 1:12){
     this_meanw2v2dist <- mean(distvec)
     
     #store
-    pooled_row <- data.frame(w2v2Layer = l,
+    pooled_row <- data.frame(l = layer,
                              infant = b,
                              age = a,
                              entropy_avg = avg_ent,
