@@ -1,0 +1,54 @@
+
+Call:
+lm(formula = scale(entropy_avg) ~ poly(scale(age), 2), data = dispersionData)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-1.5487 -0.1888  0.1344  0.4489  1.4947 
+
+Coefficients:
+                       Estimate Std. Error t value Pr(>|t|)
+(Intercept)          -2.339e-15  3.369e-01   0.000    1.000
+poly(scale(age), 2)1  1.015e+00  1.066e+00   0.953    0.372
+poly(scale(age), 2)2 -1.471e-01  1.066e+00  -0.138    0.894
+
+Residual standard error: 1.066 on 7 degrees of freedom
+Multiple R-squared:  0.117,	Adjusted R-squared:  -0.1353 
+F-statistic: 0.4636 on 2 and 7 DF,  p-value: 0.647
+
+
+Call:
+lm(formula = scale(avgpairdist_avg) ~ poly(scale(age), 2), data = dispersionData)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-1.24852 -0.67350 -0.00922  0.64645  1.25664 
+
+Coefficients:
+                       Estimate Std. Error t value Pr(>|t|)
+(Intercept)          -1.976e-15  3.264e-01   0.000    1.000
+poly(scale(age), 2)1 -1.222e+00  1.032e+00  -1.184    0.275
+poly(scale(age), 2)2  2.203e-01  1.032e+00   0.213    0.837
+
+Residual standard error: 1.032 on 7 degrees of freedom
+Multiple R-squared:  0.1714,	Adjusted R-squared:  -0.06532 
+F-statistic: 0.7241 on 2 and 7 DF,  p-value: 0.5178
+
+
+Call:
+lm(formula = scale(avgw2v2dist) ~ poly(scale(age), 2), data = dispersionData)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-1.74774 -0.47422 -0.05407  0.39856  1.36283 
+
+Coefficients:
+                       Estimate Std. Error t value Pr(>|t|)
+(Intercept)          -2.282e-15  3.306e-01   0.000    1.000
+poly(scale(age), 2)1 -1.413e-01  1.045e+00  -0.135    0.896
+poly(scale(age), 2)2 -1.153e+00  1.045e+00  -1.103    0.307
+
+Residual standard error: 1.045 on 7 degrees of freedom
+Multiple R-squared:  0.1499,	Adjusted R-squared:  -0.09299 
+F-statistic: 0.6172 on 2 and 7 DF,  p-value: 0.5664
+

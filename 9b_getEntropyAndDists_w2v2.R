@@ -99,7 +99,7 @@ for (layer in 1:12){
                              entropy_sd = sd_ent,
                              avgpairdist_avg = avg_avgpairdist,
                              avgpairdist_sd = sd_avgpairdist,
-                             avgmfccdist = this_meanw2v2dist,
+                             avgw2v2dist = this_meanw2v2dist,
                              nRuns = n_runs)
     pooledEntropyData <- rbind(pooledEntropyData,pooled_row)
     
