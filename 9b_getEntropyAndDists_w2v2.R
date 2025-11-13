@@ -112,3 +112,6 @@ write.csv(pooledEntropyData,"w2v2dispersionData.csv",row.names = FALSE)
 # superimposed on the umap plot.
 # And then it could be nice to show a heat map corresponding to the histogram
 # that forms the basis of the entropy calculation.
+
+# Should consider using cosine similarity instead of Euclidean distance
+# See cosine in the coop package
