@@ -78,7 +78,7 @@ for (layer in 1:12){
   for (b in babies){
     
     # umap and metadata
-    this_entropyData <- subset(entropyData,(baby==b & w2v2Layer==l))
+    this_entropyData <- subset(entropyData,(baby==b & l==layer))
     avg_ent <- mean(as.numeric(this_entropyData$this_entropy))
     sd_ent <- sd(as.numeric(this_entropyData$this_entropy))
     avg_avgpairdist <- mean(as.numeric(this_entropyData$this_meandist))
@@ -87,7 +87,7 @@ for (layer in 1:12){
     a <- this_entropyData$a[1]
     
     # w2v2 features (no umap)
-    this_w2v2Data <- subset(w2v2Data,infant==b, select = -c(infant,age,wavFile))
+    this_w2v2Data <- subset(w2v2Data,infant==b, select = -c(l,infant,age,wavFile))
     distvec <- as.vector(dist(this_w2v2Data))
     this_meanw2v2dist <- mean(distvec)
     
