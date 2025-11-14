@@ -18,3 +18,32 @@
 
 # First things first though, perhaps just compare across w2v2 layers and mfccs,
 # without UMAP or PCA. And focus on the IVI-distance beta
+
+library(data.table)
+
+setwd("~/Documents/GitHub/IVFCR-UMAP")
+
+rec_info <- fread("cleaning_metadata/recordings_cleaning_data.csv",
+                  select = c("babyID","babyAge"))
+
+ivi_data <- data.frame()
+  
+for (r in 1:nrow(rec_info)){
+  bID <- rec_info$babyID[r]
+  bAge <- rec_info$babyAge[r]
+  clip_info <- read.csv(paste("cleaning_metadata/best_clip_labels_",bID,"_",bAge,".csv",sep=""))
+  clip_info <- subset(clip_info,clean)
+  for (c in 1:(nrow(clip_info)-1)){
+    ivi <- (clip_info$startSecond[c+1]-clip_info$endSecond[c])
+    clip1_wavFile <- paste(bID,"_",bAge,"_",clip_info$startSecond[c],"_",clip_info$endSecond[c],".wav",sep="")
+    clip2_wavFile <- paste(bID,"_",bAge,"_",clip_info$startSecond[c+1],"_",clip_info$endSecond[c+1],".wav",sep="")
+    ivi_data_row <- data.frame(babyID = bID,
+                               babyAge = bAge,
+                               ivi_in_seconds = ivi,
+                               wavFile1 = clip1_wavFile,
+                               wavFile2 = clip2_wavFile)
+    ivi_data <- rbind(ivi_data, ivi_data_row)
+  }
+}
+
+fwrite(ivi_data,file="clean_ivi_data.csv")
