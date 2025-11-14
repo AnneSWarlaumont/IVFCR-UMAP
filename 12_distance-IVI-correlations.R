@@ -47,3 +47,16 @@ for (r in 1:nrow(rec_info)){
 }
 
 fwrite(ivi_data,file="clean_ivi_data.csv")
+
+for (l in 1:12){
+  w2v2_embeddings <- fread(paste("w2v2embeddings/all_emb_scaled_layer",l,".csv",sep=""))
+  layer_distances <- c()
+  for (i in 1:nrow(ivi_data)){
+    clip_embeddings <- rbind(subset(w2v2_embeddings,wavFile == ivi_data$wavFile1[i], select = -c(infant,age,wavFile)),
+                        subset(w2v2_embeddings,wavFile == ivi_data$wavFile2[i], select = -c(infant,age,wavFile)))
+    ## Looks like there is a bug that the w2v2_embeddings wavFile values are mismatched to the infant ID and age variables.
+    ## So next work session I need to look into where that arose from and fix up the analysis pipeline accordingly.
+    ## As well as re-computing the stats calculated previously.
+    this_dist <- dist(clip_embeddings)
+  }
+}
