@@ -39,7 +39,8 @@ F-statistic: 3.073 on 2 and 7 DF,  p-value: 0.1102
 
 The downloaded binary packages are in
 	/var/folders/54/fb7_1pnj4ns11xl6fx3h2dx80000gn/T//Rtmpq2Fo3e/downloaded_packages
-an       3Q      Max 
+NULL
+    3Q      Max 
 -1.74774 -0.47422 -0.05407  0.39856  1.36283 
 
 Coefficients:
