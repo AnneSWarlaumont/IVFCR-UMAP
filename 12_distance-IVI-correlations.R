@@ -57,6 +57,7 @@ for (l in 1:12){
     ## Looks like there is a bug that the w2v2_embeddings wavFile values are mismatched to the infant ID and age variables.
     ## So next work session I need to look into where that arose from and fix up the analysis pipeline accordingly.
     ## As well as re-computing the stats calculated previously.
+    # Looks like the bug was in 8d and may have only affected the wavFiles column.
     this_dist <- dist(clip_embeddings)
   }
 }

@@ -15,7 +15,7 @@ if (!dir.exists(umapDir)){
 
 for (l in 1:12){
   
-  lcsvpattern <- paste("layer",l,".csv",sep="")
+  lcsvpattern <- paste("w2v2_layer",l,".csv",sep="")
   w2v2_emb_files <- list.files(path=inputDir,pattern=lcsvpattern)
   all_embeddings <- data.frame()
   full_wavFiles <- c()
@@ -31,7 +31,6 @@ for (l in 1:12){
     wavFiles <- emb_data$filename
     emb_data <- emb_data[,grep("dim",colnames(emb_data))]
     all_embeddings <- rbind(all_embeddings,emb_data)
-    full_wavFiles <- c(full_wavFiles,wavFiles)
     age_days <- as.numeric(gsub("_.*","",gsub("^[^_]*_","",wavFiles)))
     age_months <- round(age_days/30)
     full_ages <- c(full_ages,age_months)
