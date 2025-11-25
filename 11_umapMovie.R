@@ -17,7 +17,8 @@ babies <- levels(as.factor(clips_data$infant))
 start_times <- sub("^(?:[^_]*_){2}([0-9.]+).*","\\1",clips_data$wavFile)
 end_times <- sub("^(?:[^_]*_){3}([0-9.]+).wav","\\1",clips_data$wavFile)
 
-baby <- babies[1] # Later can turn this into a for loop that goes through all the babies in the clean clips dataset
+baby <- "196"
+#baby <- babies[1] # Later can turn this into a for loop that goes through all the babies in the clean clips dataset
 indices <- which(clips_data$infant==baby)
 b_data <- data.frame(x=full_spectral_umap$layout[indices,1],y=full_spectral_umap$layout[indices,2],time=as.numeric(start_times[indices]),endtime=as.numeric(end_times[indices]),wavF=clips_data$wavFile[indices])
 b_data <- b_data[order(b_data$time),]

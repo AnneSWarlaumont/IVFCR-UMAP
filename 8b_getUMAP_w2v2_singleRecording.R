@@ -93,9 +93,7 @@ for (l in 1:12){
   prev_end <- b_u_data$time[1]
   all_frames_umap <- c()
   all_frames_pca <- c()
-  if (l==1){
-    all_audio <- list() 
-  }
+  all_audio <- list() 
   
   for (i in 1:nrow(b_u_data)){
     
